@@ -1,0 +1,4 @@
+mysql/data/
+.DS_Store
+.vscode/
+.idea/
