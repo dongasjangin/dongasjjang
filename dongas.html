@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>돈가스짱 (dongasjjang) - 돈가스 맛집 커뮤니티</title>
+    <style>
+        /* 돈가스가 생각나는 따뜻한 바삭 브라운 & 샐러드 그린 컬러 조합 */
+        :root {
+            --primary-color: #d97706; /* 바삭한 돈가스 브라운 */
+            --accent-color: #dc2626;  /* 매콤 소스 레드 */
+            --fresh-color: #16a34a;   /* 양배추 샐러드 그린 */
+            --dark-color: #292524;
+            --light-color: #fffbeb;   /* 따뜻한 밥 색상 분위기 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+        }
+
+        body {
+            background-color: #f7f5f0;
+            color: var(--dark-color);
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary-color), #b45309);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+            border: 1px solid #e7e5e4;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            font-size: 1.25rem;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 10px;
+            color: #44403c;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #57534e;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d6d3d1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background-color: #fafaf9;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background-color: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #b45309;
+        }
+
+        .restaurant-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .restaurant-item {
+            border: 1px solid #e7e5e4;
+            padding: 20px;
+            border-radius: 10px;
+            background: #fff;
+            transition: transform 0.2s;
+        }
+
+        .restaurant-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .restaurant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f5f5f4;
+            padding-bottom: 10px;
+        }
+
+        .restaurant-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .review-section {
+            margin-top: 15px;
+        }
+
+        .review-item {
+            background: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            border-left: 3px solid var(--fresh-color);
+        }
+
+        .rating {
+            color: #f59e0b;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .like-btn {
+            background: white;
+            color: #57534e;
+            border: 1px solid #d6d3d1;
+            width: auto;
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+            border-radius: 20px;
+        }
+
+        .like-btn.liked {
+            background: #fef2f2;
+            color: var(--accent-color);
+            border-color: #fca5a5;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🥩 돈가스짱 (dongasjjang) </h1>
+        <p>인생 돈가스 맛집을 찾는 쩝쩝박사들의 데이터베이스</p>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="card">
+                <h2>1. 신규 돈가스집 등록 (restaurants)</h2>
+                <form id="restaurantForm">
+                    <div class="form-group">
+                        <label>돈가스 매장명</label>
+                        <input type="text" id="restName" placeholder="예: 연돈카츠, 바삭당" required>
+                    </div>
+                    <div class="form-group">
+                        <label>위치 (주소)</label>
+                        <input type="text" id="restAddress" placeholder="예: 서울 마포구..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>매장 전화번호</label>
+                        <input type="text" id="restPhone" placeholder="02-123-4567">
+                    </div>
+                    <button type="submit">🍛 맛집 리스트에 추가</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>2. 돈가스 시식 리뷰 (reviews)</h2>
+                <form id="reviewForm">
+                    <div class="form-group">
+                        <label>방문한 돈가스집 선택</label>
+                        <select id="reviewRestId" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>바삭함/맛 평점</label>
+                        <select id="reviewRating">
+                            <option value="5">⭐⭐⭐⭐⭐ (인생 돈가스)</option>
+                            <option value="4">⭐⭐⭐⭐ (겉바속촉 훌륭함)</option>
+                            <option value="3">⭐⭐⭐ (평범한 돈가스)</option>
+                            <option value="2">⭐⭐ (튀김옷이 눅눅함)</option>
+                            <option value="1">⭐ (고기 잡내 남)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>상세 후기</label>
+                        <textarea id="reviewContent" rows="4" placeholder="안심/등심 카츠의 육즙 상태나 소스 맛은 어땠나요?" required></textarea>
+                    </div>
+                    <button type="submit">✍️ 리뷰 등록 (DB Insert)</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>전국 돈가스 지도 현황 (SELECT JOIN 결과)</h2>
+                <div class="restaurant-list" id="restaurantList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = { user_id: 1, username: "돈가스매니아" };
+
+        // 돈가스 컨셉에 맞춘 초기 가상 데이터
+        let db_restaurants = [
+            { restaurant_id: 1, name: "정돈카츠 본점", address: "서울 종로구 대학로", phone: "02-987-6543", created_by: 1 },
+            { restaurant_id: 2, name: "바삭당 홍대점", address: "서울 마포구 와우산로", phone: "02-111-2222", created_by: 1 }
+        ];
+
+        let db_reviews = [
+            { review_id: 1, user_id: 1, restaurant_id: 1, rating: 5, content: "안심카츠 먹었는데 육즙이 장난 아닙니다. 소금만 찍어 먹어도 천국이에요!", created_at: "2026-07-01" },
+            { review_id: 2, user_id: 1, restaurant_id: 2, rating: 4, content: "경양식 스타일인데 소스가 새콤달콤해서 질리지 않고 다 먹었습니다. 양배추 샐러드도 리필 됨!", created_at: "2026-07-01" }
+        ];
+
+        let db_likes = [{ like_id: 1, user_id: 1, review_id: 1 }]; 
+
+        function render() {
+            const listContainer = document.getElementById('restaurantList');
+            const selectContainer = document.getElementById('reviewRestId');
+            
+            selectContainer.innerHTML = db_restaurants.map(r => 
+                `<option value="${r.restaurant_id}">${r.name}</option>`
+            ).join('');
+
+            if(db_restaurants.length === 0) {
+                listContainer.innerHTML = "<p style='color:#868e96;'>등록된 돈가스 맛집이 없습니다.</p>";
+                return;
+            }
+
+            listContainer.innerHTML = db_restaurants.map(rest => {
+                const reviews = db_reviews.filter(rev => rev.restaurant_id === rest.restaurant_id);
+
+                return `
+                    <div class="restaurant-item">
+                        <div class="restaurant-header">
+                            <div>
+                                <span class="restaurant-name">🐷 ${rest.name}</span>
+                                <p style="color:#78716c; font-size:0.85rem; margin-top:4px;">📍 ${rest.address}</p>
+                            </div>
+                            <small style="color:#a8a29e;">📞 ${rest.phone}</small>
+                        </div>
+                        <div class="review-section">
+                            <h4 style="font-size:0.9rem; margin-bottom:10px; color:#57534e;">시식평 (${reviews.length}개)</h4>
+                            ${reviews.length === 0 ? '<p style="color:#a8a29e; font-size:0.85rem;">아직 리뷰가 없습니다. 첫 숟가락을 얹어보세요!</p>' : ''}
+                            
+                            ${reviews.map(rev => {
+                                const likeCount = db_likes.filter(l => l.review_id === rev.review_id).length;
+                                const isLiked = db_likes.some(l => l.review_id === rev.review_id && l.user_id === currentUser.user_id);
+
+                                return `
+                                    <div class="review-item">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span class="rating">${'⭐'.repeat(rev.rating)}</span>
+                                            <span style="font-size:0.8rem; color:#78716c;">작성자: ${currentUser.username}</span>
+                                        </div>
+                                        <p style="margin:8px 0 4px 0; color:#292524; line-height:1.4;">${rev.content}</p>
+                                        <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(${rev.review_id})">
+                                            👍 공감돼요 <span>${likeCount}</span>
+                                        </button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 등록 이벤트들
+        document.getElementById('restaurantForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            db_restaurants.push({
+                restaurant_id: db_restaurants.length + 1,
+                name: document.getElementById('restName').value,
+                address: document.getElementById('restAddress').value,
+                phone: document.getElementById('restPhone').value || "전화없음",
+                created_by: currentUser.user_id
+            });
+            this.reset();
+            render();
+        });
+
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            db_reviews.push({
+                review_id: db_reviews.length + 1,
+                user_id: currentUser.user_id,
+                restaurant_id: parseInt(document.getElementById('reviewRestId').value),
+                rating: parseInt(document.getElementById('reviewRating').value),
+                content: document.getElementById('reviewContent').value,
+                created_at: new Date().toISOString().split('T')[0]
+            });
+            this.reset();
+            render();
+        });
+
+        window.toggleLike = function(reviewId) {
+            const index = db_likes.findIndex(l => l.review_id === reviewId && l.user_id === currentUser.user_id);
+            if (index > -1) { db_likes.splice(index, 1); } 
+            else { db_likes.push({ like_id: db_likes.length + 1, user_id: currentUser.user_id, review_id: reviewId }); }
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>
